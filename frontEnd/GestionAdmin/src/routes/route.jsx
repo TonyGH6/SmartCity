@@ -7,6 +7,8 @@ import Stats from "../components/Stats";
 import Comments from "../components/Comments";
 import Posts from "../components/Posts";
 import Reservation from "../components/reservations";
+import Categories from "../components/Categories";
+import Users from "../components/Users";
 
 
 const router = createBrowserRouter([
@@ -23,7 +25,9 @@ const router = createBrowserRouter([
       { index: true, element: <Stats /> },            
       { path: "comments", element: <Comments /> },    
       { path: "posts", element: <Posts /> },   
-      { path: "reservations", element: <Reservation /> } ,     
+      { path: "reservations", element: <Reservation /> } ,
+      { path: "categories", element: <Categories /> } ,  
+      { path: "users", element: <Users /> } ,        
     ],
   },
 ]);

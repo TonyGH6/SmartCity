@@ -22,15 +22,7 @@ const Sidebar = () => (
         </NavLink>
       </li>
 
-      <li>
-        <NavLink to="/dashboard/categories" className="nav-link">
-          <div className="nav-item">
-            <img src={categoryIcon} alt="Category" width="18" /> <span>Catégorie</span>
-          </div>
-        </NavLink>
-      </li>
-
-      <li>
+        <li>
         <NavLink to="/dashboard/reservations" className="nav-link">
           <div className="nav-item">
             <img src={reservationIcon} alt="Reservations" width="18" /> <span>Réservations</span>
@@ -38,7 +30,7 @@ const Sidebar = () => (
         </NavLink>
       </li>
 
-      <li>
+       <li>
         <NavLink to="/dashboard/Posts" className="nav-link">
           <div className="nav-item">
             <img src={listingIcon} alt="Listings" width="18" /> <span>Annonces</span>
@@ -46,13 +38,23 @@ const Sidebar = () => (
         </NavLink>
       </li>
 
-      <li>
+        <li>
         <NavLink to="/dashboard/Users" className="nav-link">
           <div className="nav-item">
             <img src={usersIcon} alt="Users" width="18" /> <span>Utilisateurs</span>
           </div>
         </NavLink>
       </li>
+
+      <li>
+        <NavLink to="/dashboard/categories" className="nav-link">
+          <div className="nav-item">
+            <img src={categoryIcon} alt="Category" width="18" /> <span>Catégories</span>
+          </div>
+        </NavLink>
+      </li>
+
+      
 
       <li>
         <NavLink to="/dashboard/Comments" className="nav-link">
