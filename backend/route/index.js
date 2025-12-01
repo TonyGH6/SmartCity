@@ -2,6 +2,7 @@ import Router  from 'express';
 import userRouter from './clientRoute.js';
 import postRouter from './postRoute.js';
 import reservationRouter from './reservationRoute.js';
+import commentRouter from './commentRoute.js';
 import {getAllCities} from '../controller/addressController.js';
 import {login, loginWithGoogle} from '../controller/loginController.js'
 import {checkJWT} from '../middleware/identification/jwt.js'
@@ -12,9 +13,11 @@ import productTypeRouter from './productTypeRoute.js'
 
 const router = Router();
 
-router.use('/users', userRouter);
-router.use('/posts', checkJWT, postRouter);
-router.use('/reservations', checkJWT, reservationRouter);
+router.use('/users',userRouter);
+router.use('/posts', postRouter);
+router.use('/reservations', reservationRouter);
+router.use('/comments', commentRouter);
+
 /**
  * @swagger
  * /login:
@@ -55,7 +58,7 @@ router.get('/stats',checkJWT, mustBeAdmin , getAllStats)
  *      
  */
 
-router.get('/getAllCities', getAllCities);
+router.get('/getAllCities',checkJWT, getAllCities);
 /**
  * @swagger
  * /productType:
@@ -73,4 +76,5 @@ router.get('/getAllCities', getAllCities);
  *         description: Error server 
  */
 router.use('/productType', productTypeRouter);
+
 export default router;
