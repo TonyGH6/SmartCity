@@ -21,22 +21,33 @@ export const getCategories = async (req, res) => {
 
 export const createTypeProduct = async (req, res) => {
     try {
+        const { nameCategory } = req.body;
         
-        const productType = await typeProductModel.getCategories(pool, {nameCategory:req.body.nameCategory});
-        if (productType){
+        if (!nameCategory) {
+             return res.status(400).send("Le nom de la catégorie est requis.");
+        }
+
+        const categoryData = { nameCategory }; 
+
+        const existingType = await typeProductModel.getCategories(pool, categoryData);
+        
+        if (existingType && existingType.rows && existingType.rows.length > 0) {
             return res.status(409).send("Type already exists");
         }
 
-        const productCreated=await typeProductModel.createTypeProduct(pool, req.body);
-        if(productCreated){
-            res.status(201).send(productCreated);
-        }else{
-            res.status(404).send("No product type found"); 
-        }
-    }catch(err){
-        res.status(500).send(err.message);
+        const productCreated = await typeProductModel.createTypeProduct(pool, categoryData);
+        
+        if (productCreated) {
+            return res.status(201).send(productCreated);
+        } 
+        
+        return res.status(500).send("Échec de la création de la catégorie.");
+
+    } catch(err) {
+        console.error("Erreur création catégorie :", err);
+        res.status(500).send(err.message || "Erreur interne du serveur");
     }
-}
+};
 
 export const updateTypeProduct = async (req, res) => {
     try {

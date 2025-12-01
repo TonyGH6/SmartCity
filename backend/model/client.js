@@ -4,7 +4,7 @@ import argon2 from "argon2";
 
 
 export const createUser = async (SQLClient, { googleId, username, email, password, streetNumber, street, photo = null, isAdmin = false, addressID }) => {
-  
+
   if (password){
     const pepper = process.env.PEPPER;
     const passwordWithPepper = password + pepper;

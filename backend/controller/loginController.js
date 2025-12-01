@@ -35,7 +35,7 @@ export const login = async (req, res) => {
             { 
                 id: user.id, 
                 email: user.email,
-                isAdmin: user.isadmin,
+                isAdmin: user.is_admin,
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
@@ -62,7 +62,7 @@ export const loginWithGoogle = async (req, res) => {
             { 
                 id: user.id, 
                 email: user.email,
-                isAdmin: user.isadmin,
+                isAdmin: user.is_admin,
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
