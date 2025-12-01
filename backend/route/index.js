@@ -3,7 +3,7 @@ import userRouter from './clientRoute.js';
 import postRouter from './postRoute.js';
 import reservationRouter from './reservationRoute.js';
 import {getAllCities} from '../controller/addressController.js';
-import {login} from '../controller/loginController.js'
+import {login, loginWithGoogle} from '../controller/loginController.js'
 import {checkJWT} from '../middleware/identification/jwt.js'
 import { mustBeAdmin } from '../middleware/identification/mustBeAdmin.js';
 import {clientValidatorMiddleware} from '../middleware/validation.js';
@@ -39,6 +39,7 @@ router.use('/reservations', checkJWT, reservationRouter);
  */
 
 router.post('/login',clientValidatorMiddleware.loginValidator, login)
+router.post('/loginWithGoogle', clientValidatorMiddleware.loginValidator, loginWithGoogle)
 router.get('/stats',checkJWT, mustBeAdmin , getAllStats)
 /**
  * @swagger
