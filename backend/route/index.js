@@ -13,10 +13,10 @@ import productTypeRouter from './productTypeRoute.js'
 
 const router = Router();
 
-router.use('/users', checkJWT,userRouter);
-router.use('/posts', checkJWT, postRouter);
-router.use('/reservations', checkJWT, reservationRouter);
-router.use('/comments', checkJWT, commentRouter);
+router.use('/users',userRouter);
+router.use('/posts', postRouter);
+router.use('/reservations', reservationRouter);
+router.use('/comments', commentRouter);
 
 /**
  * @swagger
@@ -58,7 +58,7 @@ router.get('/stats',checkJWT, mustBeAdmin , getAllStats)
  *      
  */
 
-router.get('/getAllCities', getAllCities);
+router.get('/getAllCities',checkJWT, getAllCities);
 /**
  * @swagger
  * /productType:
@@ -75,6 +75,6 @@ router.get('/getAllCities', getAllCities);
  *       500 :
  *         description: Error server 
  */
-router.use('/productType',checkJWT, productTypeRouter);
+router.use('/productType', productTypeRouter);
 
 export default router;

@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine';
 
 const addClientSchema = vine.object({
-    googleId: vine.string().trim(),
+    googleId: vine.string().trim().optional(),
     username: vine.string().trim(),
     street : vine.string().trim(),
     streetNumber : vine.number(), 

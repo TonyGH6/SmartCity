@@ -17,7 +17,6 @@ export const mustBeAdmin = (req, res, next) => {
         if (!req.user) {
             return res.status(401).send("Authentication required.");
         }
-
         const isAdmin = req.user.isAdmin; 
         if (isAdmin === true) {
             return next();
