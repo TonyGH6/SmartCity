@@ -3,6 +3,11 @@ import * as userModel from "../model/client.js";
 import argon2 from "argon2";
 import 'dotenv/config';
 import jwt from "jsonwebtoken";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import {saveImage} from '../middleware/photo/saveImage.js';
+import * as uuid from 'uuid'
 
 
 /**
@@ -43,15 +48,27 @@ import jwt from "jsonwebtoken";
  *                 type: integer
  */
 
+
+
+
+
 export const createUser = async (req, res) => {
   try {
-    const photo = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`  : null;   
-    let user = await userModel.getUserByEmail(pool, req.body.email)
+    const {username, email, password, street, streetNumber, isAdmin, addressID} = req.body;
+    const photo = req.file;
+    //const photo = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`  : null;   
+    let user = await userModel.getUserByEmail(pool, email)
     const googleId = req.body.googleId ? req.body.googleId : null;
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const destFolderImages = path.join(__dirname, '../middleware/photo/');
     
     if (!user){
-      user = await userModel.createUser(pool, {googleId: googleId, username:req.body.username, email: req.body.email, streetNumber: req.body.streetNumber, street:req.body.street, photo:req.body.photo, isAdmin:req.body.isAdmin, addressID:req.body.addressID, password:req.body.password});
-      const token = jwt.sign(
+
+
+        
+        user = await userModel.createUser(pool, {googleId: googleId, username, email, streetNumber, street, photo:req.body.photo, isAdmin:req.body.isAdmin, addressID:req.body.addressID, password:req.body.password});
+        const token = jwt.sign(
                   { 
                       id: user.id, 
                       email: user.email,
@@ -61,6 +78,7 @@ export const createUser = async (req, res) => {
                   { expiresIn: "24h" }
               );
               res.send({ token });
+              await saveImage(photo.buffer, uuid.v4(), destFolderImages);
     } else {
       res.status(404).send("User already exists");
     }

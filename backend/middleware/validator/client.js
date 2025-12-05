@@ -4,10 +4,9 @@ const addClientSchema = vine.object({
     googleId: vine.string().trim().optional(),
     username: vine.string().trim(),
     street : vine.string().trim(),
-    streetNumber : vine.number(), 
-    photo:vine.string().optional(),
+    streetNumber : vine.string(), 
     email: vine.string().email().trim(),
-    password: vine.string()
+    password: vine.string().optional(),
 }); 
 
 

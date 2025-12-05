@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {checkJWT} from '../middleware/identification/jwt.js'
-import { uploadPhoto } from '../middleware/photo/upload.js';
+
 import {
   updateUser,
   deleteUser,
@@ -17,13 +17,16 @@ import {mustBeAdmin} from '../middleware/identification/mustBeAdmin.js'
 
 import { orMiddleware } from '../middleware/utils/orMiddleware.js';
 
+import {upload} from '../middleware/photo/upload.js';
+
 
 const router = Router();
 
 
 
 
-router.post("/", clientValidatorMiddleware.addClientValidator, uploadPhoto, createUser); 
+
+router.post("/", upload.single('photo'), clientValidatorMiddleware.addClientValidator, createUser); 
 /**
  * @swagger
  * /me:
