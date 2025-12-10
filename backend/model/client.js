@@ -180,3 +180,46 @@ export const getUsers = async (SQLClient, { name, role, page = 1, limit = 10 }) 
         throw new Error(`Erreur SQL dans getUsers : ${err.message}`); 
     }
 };
+
+
+export const getAdminByEmail = async (SQLClient, email) => {
+    const { rows } = await SQLClient.query(
+        `SELECT id, username, email, password, is_admin AS "isAdmin"
+         FROM Client
+         WHERE email = $1 AND is_admin = TRUE`,
+        [email]
+    );
+    return rows[0];
+};
+
+export const setResetToken = async (SQLClient, userId, token, expiresAt) => {
+    await SQLClient.query(
+        `UPDATE Client
+         SET reset_token = $1,
+             reset_token_expires = $2
+         WHERE id = $3`,
+        [token, expiresAt, userId]
+    );
+};
+
+export const getUserByResetToken = async (SQLClient, token) => {
+    const { rows } = await SQLClient.query(
+        `SELECT id, username, email, reset_token_expires
+         FROM Client
+         WHERE reset_token = $1
+         AND is_admin = TRUE`,
+        [token]
+    );
+    return rows[0];
+};
+
+export const resetPasswordById = async (SQLClient, userId, hashedPassword) => {
+    await SQLClient.query(
+        `UPDATE Client
+         SET password = $1,
+             reset_token = NULL,
+             reset_token_expires = NULL
+         WHERE id = $2`,
+        [hashedPassword, userId]
+    );
+};

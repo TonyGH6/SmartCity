@@ -1,5 +1,14 @@
 import { Router } from 'express';
-import {getMyReservations, getReservation,createReservation, getReservationsByClientID, getReservationsByPostID, updateReservation, deleteReservation,getReservations} from '../controller/reservationController.js'
+import {
+    getMyReservations,
+    getReservation,
+    createReservation,
+    getReservationsByClientID,
+    getReservationsByPostID,
+    updateReservation,
+    deleteReservation,
+    getReservations
+} from '../controller/reservationController.js'
 import {reservationValidatorMiddleware} from '../middleware/validation.js';
 import {isReservationOwner} from '../middleware/identification/isReservationOwner.js';
 import {checkJWT} from '../middleware/identification/jwt.js'

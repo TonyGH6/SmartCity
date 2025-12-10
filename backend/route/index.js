@@ -10,6 +10,7 @@ import { mustBeAdmin } from '../middleware/identification/mustBeAdmin.js';
 import {clientValidatorMiddleware} from '../middleware/validation.js';
 import { getAllStats } from '../controller/dashboardController.js';
 import { orMiddleware } from '../middleware/utils/orMiddleware.js';
+import adminResetRoutes from './adminResetRoute.js';
 
 import productTypeRouter from './productTypeRoute.js'
 
@@ -19,6 +20,7 @@ router.use('/users',userRouter);
 router.use('/posts', checkJWT,postRouter);
 router.use('/reservations',checkJWT, reservationRouter);
 router.use('/comments',checkJWT, commentRouter);
+router.use('/admin', adminResetRoutes);
 
 /**
  * @swagger
