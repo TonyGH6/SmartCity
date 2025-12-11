@@ -1,6 +1,6 @@
 import { pool } from "../database/database.js";
 import { randomBytes } from "node:crypto";
-import argon2 from "argon2";
+import { hashPassword } from "../utils/password.js";
 import "dotenv/config";
 import * as userModel from "../model/client.js";
 
@@ -55,17 +55,13 @@ export const resetPassword = async (req, res) => {
         }
 
         const now = new Date();
-        const expires = admin.reset_token_expires
-            ? new Date(admin.reset_token_expires)
-            : null;
+        const expires = admin.resetTokenExpires;
 
         if (!expires || now > expires) {
             return res.status(400).json({ message: "Token expiré" });
         }
 
-        const pepper = process.env.PEPPER;
-        const passwordWithPepper = newPassword + pepper;
-        const hashedPassword = await argon2.hash(passwordWithPepper);
+        const hashedPassword = await hashPassword(newPassword);
 
         await userModel.resetPasswordById(pool, admin.id, hashedPassword);
 

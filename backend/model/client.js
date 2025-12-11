@@ -1,16 +1,15 @@
-
 import 'dotenv/config';
-import argon2 from "argon2";
+import { hashPassword } from "../utils/password.js";
+
+
+
 
 
 export const createUser = async (SQLClient, { googleId, username, email, password, streetNumber, street, photo = null, isAdmin = false, addressID }) => {
 
-  if (password){
-    const pepper = process.env.PEPPER;
-    const passwordWithPepper = password + pepper;
-    const hash = await argon2.hash(passwordWithPepper);
-    password = hash
-  }
+    if (password) {
+        password = await hashPassword(password);
+    }
   
   
   const { rows } = await SQLClient.query(
@@ -79,7 +78,8 @@ export const updateUser = async (SQLClient, id, { username, email, password, pho
     }
     
     if (password ) {
-        queryValues.push(password);
+        const hashedPassword = await hashPassword(password);
+        queryValues.push(hashedPassword);
         querySet.push(`password = $${queryValues.length}`);
     }
     
@@ -204,7 +204,7 @@ export const setResetToken = async (SQLClient, userId, token, expiresAt) => {
 
 export const getUserByResetToken = async (SQLClient, token) => {
     const { rows } = await SQLClient.query(
-        `SELECT id, username, email, reset_token_expires
+        `SELECT id, username, email, reset_token_expires AS "resetTokenExpires"
          FROM Client
          WHERE reset_token = $1
          AND is_admin = TRUE`,
