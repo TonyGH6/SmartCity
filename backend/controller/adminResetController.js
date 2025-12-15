@@ -1,8 +1,8 @@
 import { pool } from "../database/database.js";
-import { randomBytes } from "node:crypto";
 import { hashPassword } from "../utils/password.js";
+import jwt from "jsonwebtoken";
+import {getAdminByEmail, getUserById, resetPasswordById} from "../model/client.js";
 import "dotenv/config";
-import * as userModel from "../model/client.js";
 
 export const requestReset = async (req, res) => {
     try {
@@ -12,21 +12,24 @@ export const requestReset = async (req, res) => {
             return res.status(400).json({ message: "Email requis" });
         }
 
-        const admin = await userModel.getAdminByEmail(pool, email);
+        const admin = await getAdminByEmail(pool, email);
 
+        // Réponse neutre quoi qu'il arrive (anti user enumeration)
         if (!admin) {
             return res.status(200).json({
-                message:
-                    "Si un compte administrateur existe avec cet email, un lien de réinitialisation a été généré.",
+                message: "Si un compte administrateur existe avec cet email, un lien de réinitialisation a été généré.",
             });
         }
 
-        const token = randomBytes(32).toString("hex");
-        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // +1h
+        // JWT de reset: contient l'id admin (sub) + un type
 
-        await userModel.setResetToken(pool, admin.id, token, expiresAt);
+        const token = jwt.sign(
+            { type: "admin_reset" },
+            process.env.JWT_SECRET,
+            { subject: String(admin.id), expiresIn: "1m" }
+        );
 
-        const resetLink = `https://ton-frontend/reset-password?token=${token}`;
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
         return res.status(200).json({
             message: "Lien de réinitialisation généré.",
@@ -43,31 +46,35 @@ export const resetPassword = async (req, res) => {
         const { token, newPassword } = req.body;
 
         if (!token || !newPassword) {
-            return res
-                .status(400)
-                .json({ message: "Token et nouveau mot de passe requis" });
+            return res.status(400).json({ message: "Token et nouveau mot de passe requis" });
         }
 
-        const admin = await userModel.getUserByResetToken(pool, token);
+        let payload;
+        try {
+            payload = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (e) {
+            // e.name peut être "TokenExpiredError" ou "JsonWebTokenError"
+            const msg = e.name === "TokenExpiredError" ? "Token expiré" : "Token invalide";
+            return res.status(400).json({ message: msg });
+        }
 
-        if (!admin) {
+        if (payload.type !== "admin_reset") {
             return res.status(400).json({ message: "Token invalide" });
         }
 
-        const now = new Date();
-        const expires = admin.resetTokenExpires;
+        const adminId = payload.sub; // subject
 
-        if (!expires || now > expires) {
-            return res.status(400).json({ message: "Token expiré" });
+        // Sécurité: vérifier que cet id existe toujours et que c'est bien un admin
+        const admin = await getUserById(pool, adminId);
+        if (!admin || admin.isAdmin !== true) {
+            // Selon ton mapping, adapte le champ (voir note juste après)
+            return res.status(400).json({ message: "Token invalide" });
         }
 
         const hashedPassword = await hashPassword(newPassword);
+        await resetPasswordById(pool, adminId, hashedPassword);
 
-        await userModel.resetPasswordById(pool, admin.id, hashedPassword);
-
-        return res
-            .status(200)
-            .json({ message: "Mot de passe réinitialisé avec succès" });
+        return res.status(200).json({ message: "Mot de passe réinitialisé avec succès" });
     } catch (err) {
         console.error("Erreur resetPassword:", err);
         return res.status(500).json({ message: "Erreur serveur" });

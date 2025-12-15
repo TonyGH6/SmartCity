@@ -81,9 +81,6 @@ CREATE TABLE Comment (
     CONSTRAINT fk_costumer FOREIGN KEY (id_costumer) REFERENCES Client(id)
 );
 
-ALTER TABLE Client
-ADD COLUMN reset_token TEXT NULL,
-ADD COLUMN reset_token_expires TIMESTAMP NULL;
 
 
 
