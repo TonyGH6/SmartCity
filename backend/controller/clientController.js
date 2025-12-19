@@ -72,7 +72,7 @@ export const createUser = async (req, res) => {
                   { 
                       id: user.id, 
                       email: user.email,
-                      isAdmin: user.is_admin,
+                      isAdmin: user.isAdmin,
                   },
                   process.env.JWT_SECRET,
                   { expiresIn: "24h" }
@@ -126,7 +126,7 @@ export const updateUser = async (req, res) => {
 
         if (updateData.password) { 
             
-            if (!updateData.oldPassword && !req.user.is_admin) {
+            if (!updateData.oldPassword && !req.user.isAdmin) {
                 return res.status(400).send("L'ancien mot de passe est requis pour changer le mot de passe.");
             }
 
@@ -138,7 +138,7 @@ export const updateUser = async (req, res) => {
 
             const pepper = process.env.PEPPER;
             
-            if (!req.user.is_admin) {
+            if (!req.user.isAdmin) {
                 const validOldPassword = await argon2.verify(
                     currentUser.password, 
                     updateData.oldPassword + pepper

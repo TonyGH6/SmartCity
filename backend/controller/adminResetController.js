@@ -26,7 +26,7 @@ export const requestReset = async (req, res) => {
         const token = jwt.sign(
             { type: "admin_reset" },
             process.env.JWT_SECRET,
-            { subject: String(admin.id), expiresIn: "1m" }
+            { subject: String(admin.id), expiresIn: "15m" }
         );
 
         const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;

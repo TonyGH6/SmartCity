@@ -98,6 +98,13 @@ body {
   
 }
 
+.formResetMotDePasse .retour-button {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 0.95rem;
+
+}
+
 .password-toggle {
   border-color: rgba(255,255,255,0.35);
   color: #fff;

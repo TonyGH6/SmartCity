@@ -133,7 +133,7 @@ router.delete("/:id", checkJWT,orMiddleware(isSameUser, mustBeAdmin) , deleteUse
   */
 
 
-router.patch("/id", checkJWT, orMiddleware(isSameUser, mustBeAdmin), clientValidatorMiddleware.updateClientValidator , updateUser);  
+router.patch("/:id", checkJWT, orMiddleware(isSameUser, mustBeAdmin), clientValidatorMiddleware.updateClientValidator , updateUser);
 
 
 
