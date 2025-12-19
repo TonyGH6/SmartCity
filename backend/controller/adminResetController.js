@@ -14,14 +14,11 @@ export const requestReset = async (req, res) => {
 
         const admin = await getAdminByEmail(pool, email);
 
-        // Réponse neutre quoi qu'il arrive (anti user enumeration)
         if (!admin) {
             return res.status(200).json({
                 message: "Si un compte administrateur existe avec cet email, un lien de réinitialisation a été généré.",
             });
         }
-
-        // JWT de reset: contient l'id admin (sub) + un type
 
         const token = jwt.sign(
             { type: "admin_reset" },
@@ -53,7 +50,6 @@ export const resetPassword = async (req, res) => {
         try {
             payload = jwt.verify(token, process.env.JWT_SECRET);
         } catch (e) {
-            // e.name peut être "TokenExpiredError" ou "JsonWebTokenError"
             const msg = e.name === "TokenExpiredError" ? "Token expiré" : "Token invalide";
             return res.status(400).json({ message: msg });
         }
@@ -62,9 +58,7 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({ message: "Token invalide" });
         }
 
-        const adminId = payload.sub; // subject
-
-        // Sécurité: vérifier que cet id existe toujours et que c'est bien un admin
+        const adminId = payload.sub;
         const admin = await getUserById(pool, adminId);
         if (!admin || admin.isAdmin !== true) {
             // Selon ton mapping, adapte le champ (voir note juste après)
