@@ -4,6 +4,8 @@ import ForgotPassword from "../components/ForgotPassword.jsx";
 import ResetPassword from "../components/ResetPassword";
 import Dashboard from "../components/dashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
+import PostsHeatMap from "../components/PostsHeatMap";
+
 
 import Stats from "../components/Stats";
 import Comments from "../components/Comments";
@@ -32,6 +34,8 @@ const router = createBrowserRouter([
             { path: "reservations", element: <Reservation /> } ,
             { path: "categories", element: <Categories /> } ,
             { path: "users", element: <Users /> } ,
+            { path: "map", element: <PostsHeatMap /> },
+
         ],
     },
 ]);

@@ -6,6 +6,7 @@ import categoryIcon from "../assets/dashboard/shoppingCar.png";
 import reservationIcon from "../assets/dashboard/clipboard.png";
 import listingIcon from "../assets/dashboard/commercial.png";
 import usersIcon from "../assets/dashboard/users.png";
+import carteIcon from "../assets/dashboard/carte.png";
 import commentIcon from "../assets/dashboard/comment.png";
 
 
@@ -39,6 +40,14 @@ const Sidebar = () => (
       </li>
 
         <li>
+            <NavLink to="/dashboard/map" className="nav-link">
+                <div className="nav-item">
+                    <img src={carteIcon} alt="Listings" width="18" /><span> Carte </span>
+                </div>
+            </NavLink>
+        </li>
+
+        <li>
         <NavLink to="/dashboard/Users" className="nav-link">
           <div className="nav-item">
             <img src={usersIcon} alt="Users" width="18" /> <span>Utilisateurs</span>
@@ -54,9 +63,7 @@ const Sidebar = () => (
         </NavLink>
       </li>
 
-      
-
-      <li>
+        <li>
         <NavLink to="/dashboard/Comments" className="nav-link">
           <div className="nav-item">
            <img src={commentIcon} alt="comment" width="18" /> <span>Commentaires</span>

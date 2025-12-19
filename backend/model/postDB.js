@@ -1,19 +1,38 @@
 import {createPostCategory} from './postCategory.js';
 
-export const createPost = async (SQLClient, clientID, {description, title, numberOfPlaces, photo, street, streetNumber, addressID}) => {
-
+export const createPost = async (
+    SQLClient,
+    clientID,
+    { description, title, numberOfPlaces, photo, street, streetNumber, addressID, latitude, longitude }) => {
     try {
-        const {rows} = await SQLClient.query(
-        `INSERT INTO Post (description, title, number_of_places, post_status, photo, street, street_number, address_id, client_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        RETURNING *`,
-        [description, title, numberOfPlaces, 'available', photo, street, streetNumber, addressID, clientID]
+        const { rows } = await SQLClient.query(
+            `INSERT INTO Post (
+                description, title, number_of_places, post_status, photo,
+                street, street_number, address_id, client_id,
+                latitude, longitude
+            )
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+                 RETURNING *`,
+            [
+                description,
+                title,
+                numberOfPlaces,
+                "available",
+                photo,
+                street,
+                streetNumber,
+                addressID,
+                clientID,
+                latitude ?? null,
+                longitude ?? null,
+            ]
         );
         return rows[0];
     } catch (err) {
         throw err;
     }
 };
+
 
 
 

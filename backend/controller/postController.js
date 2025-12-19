@@ -1,6 +1,16 @@
 import { pool } from "../database/database.js";
 import {createPostCategory} from '../model/postCategory.js'
 import * as postModel from '../model/postDB.js';
+import { geocodeAddress } from "../utils/geocode.js";
+
+const getCityAndPostalCodeByAddressId = async (SQLClient, addressID) => {
+    const { rows } = await SQLClient.query(
+        "SELECT postal_code, city FROM Address WHERE id = $1",
+        [addressID]
+    );
+    return rows[0] || null;
+};
+
 
 export const getPost = async (req, res) => {
     try {
@@ -29,60 +39,71 @@ export const getPosts = async (req, res) => {
     }
 }
 
-
-
 export const createPost = async (req, res) => {
     let client;
     try {
-        
-        const { categoriesProduct, clientID: providedClientID } = req.body; 
-        
-        if (!categoriesProduct || categoriesProduct.length === 0){
+        const { categoriesProduct, clientID: providedClientID } = req.body;
+
+        if (!categoriesProduct || categoriesProduct.length === 0) {
             return res.status(400).send("Missing product category to create a post");
         }
-        
+
         client = await pool.connect();
-        await client.query('BEGIN'); 
-        
+        await client.query("BEGIN");
+
         let clientIDToUse;
-                
+
         if (req.user && req.user.isAdmin && providedClientID) {
             clientIDToUse = providedClientID;
         } else if (req.user) {
             clientIDToUse = req.user.id;
-        }else {
+        } else {
             return res.status(401).send("Authentication required to create a post.");
         }
 
         if (!clientIDToUse) {
-             await client.query('ROLLBACK');
-             return res.status(401).send("Client ID is missing or unauthorized.");
+            await client.query("ROLLBACK");
+            return res.status(401).send("Client ID is missing or unauthorized.");
         }
 
+        const { street, streetNumber, addressID } = req.body;
+
+        if (street && streetNumber && addressID) {
+            const addressRow = await getCityAndPostalCodeByAddressId(client, addressID);
+
+            if (addressRow) {
+                const coords = await geocodeAddress({
+                    street,
+                    streetNumber,
+                    postalCode: addressRow.postal_code,
+                    city: addressRow.city,
+                    country: "Belgique",
+                });
+
+                if (coords) {
+                    req.body.latitude = coords.latitude;
+                    req.body.longitude = coords.longitude;
+                }
+            }
+        }
 
         const post = await postModel.createPost(client, clientIDToUse, req.body);
         const postID = post.id;
 
         for (const categoryID of categoriesProduct) {
-            await createPostCategory(client, { IDCategory :categoryID, IDPost: postID });
+            await createPostCategory(client, { IDCategory: categoryID, IDPost: postID });
         }
 
-        await client.query('COMMIT');
-
+        await client.query("COMMIT");
         res.status(201).send("Post created");
-    } catch (err){
-        
-            await client.query('ROLLBACK'); 
-    
-        console.error("Erreur lors de la création du post:", err);
+
+    } catch (err) {
+        if (client) await client.query("ROLLBACK");
         res.status(500).send(err.message || "Erreur interne du serveur.");
     } finally {
         if (client) client.release();
     }
-}
-
-
-
+};
 
 export const updatePost = async (req, res) => {
     try {

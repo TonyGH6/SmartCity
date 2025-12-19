@@ -42,6 +42,8 @@ CREATE TABLE Post (
     street VARCHAR(100) NOT NULL,
     street_number INT NOT NULL,
     CHECK (street_number > 0),
+    latitude DOUBLE PRECISION NULL,
+    longitude DOUBLE PRECISION NULL,
     address_id INT NOT NULL REFERENCES Address(id) ON DELETE CASCADE, 
     client_id INT NOT NULL REFERENCES Client(id) ON DELETE CASCADE
 );
@@ -81,6 +83,7 @@ CREATE TABLE Comment (
     CONSTRAINT fk_costumer FOREIGN KEY (id_costumer) REFERENCES Client(id)
 );
 
+CREATE INDEX idx_post_lat_lng ON Post(latitude, longitude);
 
 
 
